@@ -3,8 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import dotenv from 'dotenv';
 import { MongoClient, type Collection, type Db } from 'mongodb';
 import { MenuItem, Category, Order, Memory, User, Offer } from './types.js';
+
+dotenv.config();
 
 interface AppSettings {
   key: string;
@@ -163,6 +166,7 @@ const DEFAULT_OFFERS: Offer[] = [
 class MongoDbService {
   private client: MongoClient;
   private connection?: Promise<Db>;
+  readonly dbName = MONGODB_DB_NAME;
 
   constructor() {
     this.client = new MongoClient(MONGODB_URI);
@@ -170,6 +174,12 @@ class MongoDbService {
 
   async connect(): Promise<void> {
     await this.getDb();
+  }
+
+  async ping(): Promise<boolean> {
+    const db = await this.getDb();
+    await db.command({ ping: 1 });
+    return true;
   }
 
   private async getDb(): Promise<Db> {
