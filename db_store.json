@@ -1,0 +1,223 @@
+{
+  "menuItems": [
+    {
+      "id": "item-paneer-pizza",
+      "name": "Paneer Butter Masala Pizza",
+      "price": 140,
+      "category": "Pizza",
+      "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=60",
+      "isVeg": true,
+      "description": "A fusion delicious pizza loaded with tender paneer cubes and rich butter masala base sauce.",
+      "isAvailable": true,
+      "rating": 4.5,
+      "prepTime": "15 Min"
+    },
+    {
+      "id": "item-roasted-potato",
+      "name": "Roasted Potato",
+      "price": 130,
+      "category": "Healthy",
+      "image": "https://images.unsplash.com/photo-1518013431117-eb1465fa5752?w=500&auto=format&fit=crop&q=60",
+      "isVeg": true,
+      "description": "Crispy roasted baby potatoes lightly tossed in premium olive oil, fresh rosemary, and sea salt.",
+      "isAvailable": true,
+      "rating": 4.4,
+      "prepTime": "20 Min"
+    },
+    {
+      "id": "item-paneer-masala",
+      "name": "Paneer Butter Masala",
+      "price": 140,
+      "category": "Home Style",
+      "image": "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=60",
+      "isVeg": true,
+      "description": "Soft, creamy home style cottage cheese simmered in slowly cooked rich tomato-cashew curry gravy.",
+      "isAvailable": true,
+      "rating": 4.7,
+      "prepTime": "15 Min"
+    },
+    {
+      "id": "item-ghee-prawns",
+      "name": "Ghee Prawns",
+      "price": 140,
+      "category": "Home Style",
+      "image": "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=500&auto=format&fit=crop&q=60",
+      "isVeg": false,
+      "description": "Succulent prawns toasted with authentic home-made cow ghee and rich spicy coastal masalas.",
+      "isAvailable": true,
+      "rating": 4.9,
+      "prepTime": "20 Min"
+    },
+    {
+      "id": "item-chicken-sandwich",
+      "name": "Chicken Sandwich",
+      "price": 140,
+      "category": "Chicken",
+      "image": "https://images.unsplash.com/photo-1521390188846-e2a3a97453a0?w=500&auto=format&fit=crop&q=60",
+      "isVeg": false,
+      "description": "Double stacked fresh sandwich with robust flame grilled chicken breast, fresh lettuce, and cheese.",
+      "isAvailable": true,
+      "rating": 4.5,
+      "prepTime": "15 Min"
+    },
+    {
+      "id": "item-stuffed-dates",
+      "name": "Stuffed dates dessert",
+      "price": 120,
+      "category": "Healthy",
+      "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=500&auto=format&fit=crop&q=60",
+      "isVeg": true,
+      "description": "Soft, sweet Medjool dates stuffed with high-quality cream cheese and crunchy toasted walnuts.",
+      "isAvailable": true,
+      "rating": 4.3,
+      "prepTime": "20 Min"
+    },
+    {
+      "id": "item-crab-lollipop",
+      "name": "Crab Lollypop",
+      "price": 120,
+      "category": "Chicken",
+      "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&auto=format&fit=crop&q=60",
+      "isVeg": false,
+      "description": "Savory breaded crab claw lollipops fried golden brown, accompanied by spicy sriracha sauce.",
+      "isAvailable": true,
+      "rating": 4.3,
+      "prepTime": "20 Min"
+    },
+    {
+      "id": "item-beef-steak",
+      "name": "Beef Steak",
+      "price": 120,
+      "category": "Home Style",
+      "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=60",
+      "isVeg": false,
+      "description": "Thick, seasoned beef steak grilled exactly to your design preference, served with visual herbs.",
+      "isAvailable": true,
+      "rating": 4.3,
+      "prepTime": "20 Min"
+    },
+    {
+      "id": "item-chicken-burger",
+      "name": "Chicken Burger",
+      "price": 120,
+      "category": "Burger",
+      "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60",
+      "isVeg": false,
+      "description": "Classic toasted bun with golden-fried chicken patty, special sauces, red onions, and dill pickles.",
+      "isAvailable": true,
+      "rating": 4.6,
+      "prepTime": "10 Min"
+    },
+    {
+      "id": "item-veg-momo",
+      "name": "Veg Steamed Momo",
+      "price": 90,
+      "category": "Momo",
+      "image": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=60",
+      "isVeg": true,
+      "description": "Steaming hot handmade authentic Nepalese dumplings filled with finely chopped organic vegetables.",
+      "isAvailable": true,
+      "rating": 4.4,
+      "prepTime": "12 Min"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-healthy",
+      "name": "Healthy",
+      "image": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=150&auto=format&fit=crop&q=60",
+      "type": "both"
+    },
+    {
+      "id": "cat-homestyle",
+      "name": "Home Style",
+      "image": "https://images.unsplash.com/photo-1626200419199-391ae4be7a40?w=150&auto=format&fit=crop&q=60",
+      "type": "both"
+    },
+    {
+      "id": "cat-pizza",
+      "name": "Pizza",
+      "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=150&auto=format&fit=crop&q=60",
+      "type": "both"
+    },
+    {
+      "id": "cat-chicken",
+      "name": "Chicken",
+      "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=150&auto=format&fit=crop&q=60",
+      "type": "nonveg"
+    },
+    {
+      "id": "cat-momo",
+      "name": "Momo",
+      "image": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=150&auto=format&fit=crop&q=60",
+      "type": "both"
+    },
+    {
+      "id": "cat-burger",
+      "name": "Burger",
+      "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150&auto=format&fit=crop&q=60",
+      "type": "both"
+    }
+  ],
+  "orders": [
+    {
+      "tableNumber": "3",
+      "customerName": "test",
+      "phone": "8786765544",
+      "items": [
+        {
+          "menuItem": {
+            "id": "item-paneer-pizza",
+            "name": "Paneer Butter Masala Pizza",
+            "price": 140,
+            "category": "Pizza",
+            "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=60",
+            "isVeg": true,
+            "description": "A fusion delicious pizza loaded with tender paneer cubes and rich butter masala base sauce.",
+            "isAvailable": true,
+            "rating": 4.5,
+            "prepTime": "15 Min"
+          },
+          "quantity": 1
+        },
+        {
+          "menuItem": {
+            "id": "item-roasted-potato",
+            "name": "Roasted Potato",
+            "price": 130,
+            "category": "Healthy",
+            "image": "https://images.unsplash.com/photo-1518013431117-eb1465fa5752?w=500&auto=format&fit=crop&q=60",
+            "isVeg": true,
+            "description": "Crispy roasted baby potatoes lightly tossed in premium olive oil, fresh rosemary, and sea salt.",
+            "isAvailable": true,
+            "rating": 4.4,
+            "prepTime": "20 Min"
+          },
+          "quantity": 1
+        }
+      ],
+      "totalAmount": 270,
+      "fcmToken": "fcm-1782127285112",
+      "isManual": false,
+      "guestCount": 1,
+      "specialInstructions": "",
+      "discountPercent": 0,
+      "paymentMode": "cash",
+      "id": "order-1782127285177-636",
+      "status": "pending",
+      "timestamp": "2026-06-22T11:21:25.177Z"
+    }
+  ],
+  "memories": [],
+  "users": [],
+  "offers": [
+    {
+      "id": "offer-1",
+      "title": "Up To",
+      "discountText": "70% OFF",
+      "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60",
+      "isActive": true
+    }
+  ],
+  "autoApproveMemories": false
+}
