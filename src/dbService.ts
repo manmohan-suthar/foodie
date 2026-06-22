@@ -169,7 +169,10 @@ class MongoDbService {
   readonly dbName = MONGODB_DB_NAME;
 
   constructor() {
-    this.client = new MongoClient(MONGODB_URI);
+    this.client = new MongoClient(MONGODB_URI, {
+      maxPoolSize: 5,
+      serverSelectionTimeoutMS: 10000,
+    });
   }
 
   async connect(): Promise<void> {
