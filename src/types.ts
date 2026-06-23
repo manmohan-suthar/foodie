@@ -9,6 +9,7 @@ export interface MenuItem {
   price: number;
   category: string;
   image: string;
+  galleryImages?: string[];
   isVeg: boolean;
   description: string;
   isAvailable: boolean;

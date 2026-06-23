@@ -801,6 +801,7 @@ function MenuTab() {
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [image, setImage] = useState('');
+  const [galleryImages, setGalleryImages] = useState('');
   const [isVeg, setIsVeg] = useState(true);
   const [description, setDescription] = useState('');
   const [prepTime, setPrepTime] = useState('15 Min');
@@ -812,6 +813,7 @@ function MenuTab() {
     setPrice(item.price.toString());
     setCategory(item.category);
     setImage(item.image);
+    setGalleryImages((item.galleryImages || []).join('\n'));
     setIsVeg(item.isVeg);
     setDescription(item.description);
     setPrepTime(item.prepTime);
@@ -824,6 +826,7 @@ function MenuTab() {
     setPrice('');
     setCategory('');
     setImage('');
+    setGalleryImages('');
     setIsVeg(true);
     setDescription('');
     setPrepTime('15 Min');
@@ -843,6 +846,10 @@ function MenuTab() {
       price: parseFloat(price),
       category,
       image,
+      galleryImages: galleryImages
+        .split(/\r?\n/)
+        .map((url) => url.trim())
+        .filter(Boolean),
       isVeg,
       description,
       isAvailable: true,
@@ -865,6 +872,59 @@ function MenuTab() {
     } catch (e) {
       toast.error('Transmission fail');
     }
+  };
+
+  const handleGalleryFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.currentTarget.files;
+    if (!fileList) return;
+
+    const files: File[] = [];
+    for (let index = 0; index < fileList.length; index += 1) {
+      const file = fileList.item(index);
+      if (file) files.push(file);
+    }
+    if (files.length === 0) return;
+
+    Promise.all(
+      files.map(
+        (file) =>
+          new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (event) => resolve(event.target?.result as string);
+            reader.onerror = () => reject(new Error('Failed to read image file'));
+            reader.readAsDataURL(file);
+          }),
+      ),
+    )
+      .then((uploadedImages) => {
+        setGalleryImages((prev) => {
+          const existing = prev
+            .split(/\r?\n/)
+            .map((url) => url.trim())
+            .filter(Boolean);
+          return [...existing, ...uploadedImages].join('\n');
+        });
+        toast.success(`${uploadedImages.length} gallery photo${uploadedImages.length > 1 ? 's' : ''} added`);
+      })
+      .catch(() => toast.error('Unable to upload selected photos'));
+
+    e.target.value = '';
+  };
+
+  const galleryPreviewImages = galleryImages
+    .split(/\r?\n/)
+    .map((url) => url.trim())
+    .filter(Boolean);
+
+  const removeGalleryImage = (targetIndex: number) => {
+    setGalleryImages((prev) =>
+      prev
+        .split(/\r?\n/)
+        .map((url) => url.trim())
+        .filter(Boolean)
+        .filter((_, index) => index !== targetIndex)
+        .join('\n'),
+    );
   };
 
   const handleDelete = async (id: string) => {
@@ -969,6 +1029,52 @@ function MenuTab() {
             />
           </div>
 
+          <div className="md:col-span-2 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div>
+                <label className="block text-[11px] font-bold text-gray-500 mb-1.5">More Food Photos</label>
+                <p className="text-[10px] font-semibold text-gray-400">
+                  Upload multiple dish photos or paste one image URL per line.
+                </p>
+              </div>
+              <label className="inline-flex items-center justify-center gap-1.5 bg-[#2D2926] hover:bg-black text-white px-4 py-2.5 rounded-xl text-[11px] font-black cursor-pointer transition">
+                <Camera className="w-3.5 h-3.5" />
+                <span>Upload Photos</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleGalleryFileUpload}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            <textarea
+              placeholder="Paste one extra image URL per line for customer gallery popup"
+              value={galleryImages}
+              onChange={(e) => setGalleryImages(e.target.value)}
+              className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-3.5 py-2.5 text-xs text-gray-800 h-24 focus:outline-none focus:border-brand-orange focus:bg-white transition"
+            />
+            {galleryPreviewImages.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                {galleryPreviewImages.map((photo, index) => (
+                  <div key={`${photo}-${index}`} className="relative h-20 rounded-2xl overflow-hidden bg-gray-100 border border-gray-150">
+                    <img src={photo} alt={`Gallery ${index + 1}`} className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeGalleryImage(index)}
+                      className="absolute top-1 right-1 p-1 bg-white/95 hover:bg-red-50 text-red-500 rounded-lg shadow-xs transition"
+                      title="Remove gallery photo"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="md:col-span-2">
             <label className="block text-[11px] font-bold text-gray-550 mb-1.5">Diet Type Option</label>
             <div className="flex items-center space-x-4">
@@ -1043,6 +1149,11 @@ function MenuTab() {
 
             <div className="flex-shrink-0 relative w-20 h-20">
               <img src={item.image} className="w-full h-full object-cover rounded-xl" alt={item.name} />
+              {(item.galleryImages?.length || 0) > 0 && (
+                <span className="absolute bottom-1 left-1 bg-black/65 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md">
+                  +{item.galleryImages?.length}
+                </span>
+              )}
               
               {/* Overlay controls */}
               <div className="absolute top-1 right-1 flex space-x-1">

@@ -17,9 +17,16 @@ import {
   Plus,
   Trash2,
   ShieldAlert,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  Clock,
+  Star,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import toast from "react-hot-toast";
+import type { MenuItem } from "../types.js";
 
 export default function HomeView() {
   const {
@@ -48,6 +55,12 @@ export default function HomeView() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginName, setLoginName] = useState("");
+  const [selectedShowcaseItem, setSelectedShowcaseItem] =
+    useState<MenuItem | null>(null);
+  const [activeShowcasePhoto, setActiveShowcasePhoto] = useState(0);
+  const [selectedMemoryIndex, setSelectedMemoryIndex] = useState<number | null>(
+    null,
+  );
 
   // Camera capture state
   const [isCameraActive, setIsCameraActive] = useState(false);
@@ -76,6 +89,49 @@ export default function HomeView() {
   const handleQuickLogin = (email: string, name: string) => {
     loginGoogle(email, name);
     setShowLoginModal(false);
+  };
+
+  const getShowcasePhotos = (item: MenuItem) => {
+    const photos = [item.image, ...(item.galleryImages || [])]
+      .map((photo) => photo.trim())
+      .filter(Boolean);
+    return Array.from(new Set(photos));
+  };
+
+  const openShowcaseModal = (item: MenuItem) => {
+    setSelectedShowcaseItem(item);
+    setActiveShowcasePhoto(0);
+  };
+
+  const closeShowcaseModal = () => {
+    setSelectedShowcaseItem(null);
+    setActiveShowcasePhoto(0);
+  };
+
+  const showcasePhotos = selectedShowcaseItem
+    ? getShowcasePhotos(selectedShowcaseItem)
+    : [];
+
+  const visibleMemories = memories.slice(0, 4);
+  const selectedMemory =
+    selectedMemoryIndex !== null ? visibleMemories[selectedMemoryIndex] : null;
+
+  const closeMemoryModal = () => {
+    setSelectedMemoryIndex(null);
+  };
+
+  const showPreviousMemory = () => {
+    if (visibleMemories.length === 0) return;
+    setSelectedMemoryIndex((prev) =>
+      prev === null || prev === 0 ? visibleMemories.length - 1 : prev - 1,
+    );
+  };
+
+  const showNextMemory = () => {
+    if (visibleMemories.length === 0) return;
+    setSelectedMemoryIndex((prev) =>
+      prev === null ? 0 : (prev + 1) % visibleMemories.length,
+    );
   };
 
   // Activate capture getUserMedia
@@ -449,7 +505,8 @@ export default function HomeView() {
           {menuItems.slice(0, 4).map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100/80 p-3.5 hover:shadow-md transition flex flex-col justify-between"
+              onClick={() => openShowcaseModal(item)}
+              className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100/80 p-3.5 hover:shadow-md transition flex flex-col justify-between cursor-pointer active:scale-[0.98]"
             >
               <div className="relative">
                 <img
@@ -461,9 +518,22 @@ export default function HomeView() {
                   className={`absolute top-2 left-2 w-2.5 h-2.5 rounded-full border border-white ${item.isVeg ? "bg-green-500" : "bg-red-500"}`}
                   title={item.isVeg ? "Veg" : "Non-Veg"}
                 ></span>
-                <button className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-md rounded-full text-brand-orange shadow hover:scale-105 transition">
+                <button
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-md rounded-full text-brand-orange shadow hover:scale-105 transition"
+                >
                   <Heart className="w-3.5 h-3.5 fill-current" />
                 </button>
+                <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+                  {/* <span className="bg-black/60 text-white text-[9px] font-bold px-2 py-1 rounded-full backdrop-blur-sm">
+                    Tap for details
+                  </span> */}
+                  {(item.galleryImages?.length || 0) > 0 && (
+                    <span className="bg-white/90 text-brand-orange text-[9px] font-black px-2 py-1 rounded-full shadow-sm">
+                      +{item.galleryImages?.length} photos
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="mt-3">
@@ -479,7 +549,10 @@ export default function HomeView() {
                     ₹{item.price}
                   </span>
                   <button
-                    onClick={() => addToCart(item)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToCart(item);
+                    }}
                     className="flex items-center space-x-0.5 bg-brand-orange hover:bg-brand-orange-hover text-white px-3 py-1 rounded-full text-[10px] font-bold shadow-sm transition-all"
                   >
                     <Plus className="w-3 h-3" />
@@ -491,6 +564,166 @@ export default function HomeView() {
           ))}
         </div>
       </div>
+
+      {/* AR Food Showcase Detail Modal */}
+      <AnimatePresence>
+        {selectedShowcaseItem && (
+          <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-5"
+            onClick={closeShowcaseModal}
+          >
+            <motion.div
+              initial={{ y: 40, opacity: 0, scale: 0.96 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 40, opacity: 0, scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 260, damping: 24 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white w-full sm:max-w-md max-h-[92vh] overflow-hidden rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl text-gray-900"
+            >
+              <div className="relative bg-black">
+                <img
+                  src={
+                    showcasePhotos[activeShowcasePhoto] ||
+                    selectedShowcaseItem.image
+                  }
+                  alt={selectedShowcaseItem.name}
+                  className="w-full h-72 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/20" />
+
+                <button
+                  onClick={closeShowcaseModal}
+                  className="absolute top-4 right-4 p-2 bg-white/90 hover:bg-white text-gray-900 rounded-full shadow-md transition"
+                  aria-label="Close food details"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+
+                {showcasePhotos.length > 1 && (
+                  <>
+                    <button
+                      onClick={() =>
+                        setActiveShowcasePhoto((prev) =>
+                          prev === 0 ? showcasePhotos.length - 1 : prev - 1,
+                        )
+                      }
+                      className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/85 hover:bg-white text-gray-900 rounded-full shadow-md transition"
+                      aria-label="Previous food photo"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() =>
+                        setActiveShowcasePhoto(
+                          (prev) => (prev + 1) % showcasePhotos.length,
+                        )
+                      }
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/85 hover:bg-white text-gray-900 rounded-full shadow-md transition"
+                      aria-label="Next food photo"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
+
+                <div className="absolute left-5 right-5 bottom-5 text-white">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span
+                      className={`w-2.5 h-2.5 rounded-full border border-white ${selectedShowcaseItem.isVeg ? "bg-green-500" : "bg-red-500"}`}
+                    />
+                    <span className="text-[10px] font-black uppercase tracking-widest bg-white/15 px-2 py-1 rounded-full backdrop-blur-sm">
+                      {selectedShowcaseItem.category}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-black leading-tight">
+                    {selectedShowcaseItem.name}
+                  </h3>
+                </div>
+              </div>
+
+              <div className="p-5 overflow-y-auto max-h-[calc(92vh-18rem)]">
+                {showcasePhotos.length > 1 && (
+                  <div className="flex gap-2 overflow-x-auto pb-3 no-scrollbar">
+                    {showcasePhotos.map((photo, index) => (
+                      <button
+                        key={`${photo}-${index}`}
+                        onClick={() => setActiveShowcasePhoto(index)}
+                        className={`w-16 h-14 rounded-2xl overflow-hidden border-2 flex-shrink-0 transition ${
+                          activeShowcasePhoto === index
+                            ? "border-brand-orange"
+                            : "border-transparent opacity-75"
+                        }`}
+                      >
+                        <img
+                          src={photo}
+                          alt={`${selectedShowcaseItem.name} ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  <div className="bg-[#FAF9F7] rounded-2xl p-3 text-center">
+                    <Star className="w-4 h-4 text-amber-500 fill-amber-500 mx-auto mb-1" />
+                    <p className="text-[10px] font-black text-gray-900">
+                      {selectedShowcaseItem.rating}
+                    </p>
+                    <p className="text-[8px] font-bold text-gray-400 uppercase">
+                      Rating
+                    </p>
+                  </div>
+                  <div className="bg-[#FAF9F7] rounded-2xl p-3 text-center">
+                    <Clock className="w-4 h-4 text-brand-orange mx-auto mb-1" />
+                    <p className="text-[10px] font-black text-gray-900">
+                      {selectedShowcaseItem.prepTime}
+                    </p>
+                    <p className="text-[8px] font-bold text-gray-400 uppercase">
+                      Prep
+                    </p>
+                  </div>
+                  <div className="bg-[#FAF9F7] rounded-2xl p-3 text-center">
+                    <Info className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
+                    <p className="text-[10px] font-black text-gray-900">
+                      {selectedShowcaseItem.isVeg ? "Veg" : "Non Veg"}
+                    </p>
+                    <p className="text-[8px] font-bold text-gray-400 uppercase">
+                      Type
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600 leading-relaxed font-medium">
+                  {selectedShowcaseItem.description ||
+                    "Freshly prepared chef special with premium ingredients."}
+                </p>
+
+                <div className="flex items-center justify-between gap-3 mt-5">
+                  <div>
+                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-wider">
+                      Price
+                    </p>
+                    <p className="text-2xl font-black text-brand-orange">
+                      ₹{selectedShowcaseItem.price}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      addToCart(selectedShowcaseItem);
+                      closeShowcaseModal();
+                    }}
+                    className="flex items-center justify-center gap-1.5 bg-brand-orange hover:bg-brand-orange-hover text-white px-5 py-3 rounded-2xl text-xs font-black shadow-md transition-all"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add to Cart</span>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* 6. Gourmet Moments Catalog Showcase Card section */}
       <div className="mt-10 px-5 text-left">
@@ -515,10 +748,11 @@ export default function HomeView() {
         {/* Dynamic Card Photos list */}
         {memories.length > 0 ? (
           <div className="grid grid-cols-2 gap-4">
-            {memories.slice(0, 4).map((mem) => (
+            {visibleMemories.map((mem, index) => (
               <div
                 key={mem.id}
-                className="bg-white rounded-[2rem] p-2 border border-gray-150 shadow-xs flex flex-col justify-between"
+                onClick={() => setSelectedMemoryIndex(index)}
+                className="bg-white rounded-[2rem] p-2 border border-gray-150 shadow-xs flex flex-col justify-between cursor-pointer hover:shadow-md transition active:scale-[0.98]"
               >
                 <div className="relative">
                   <img
@@ -528,6 +762,9 @@ export default function HomeView() {
                   />
                   <div className="absolute top-1.5 right-1.5 bg-white/95 p-1 rounded-full text-brand-orange shadow-xxs">
                     <Heart className="w-3 h-3 fill-current" />
+                  </div>
+                  <div className="absolute bottom-1.5 left-1.5 bg-black/60 text-white text-[8px] font-black px-2 py-0.5 rounded-full backdrop-blur-sm">
+                    View
                   </div>
                 </div>
                 <div className="mt-2.5 px-1.5 pb-1 flex flex-col justify-between flex-grow">
@@ -558,6 +795,96 @@ export default function HomeView() {
           </div>
         )}
       </div>
+
+      {/* Diner Moments Fullscreen Photo Modal */}
+      <AnimatePresence>
+        {selectedMemory && selectedMemoryIndex !== null && (
+          <div
+            className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4"
+            onClick={closeMemoryModal}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              transition={{ type: "spring", stiffness: 260, damping: 24 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-4xl h-[86vh] bg-[#111] rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center"
+            >
+              <img
+                src={selectedMemory.photoUrl}
+                alt={`${selectedMemory.userName} diner moment`}
+                className="w-full h-full object-contain bg-black"
+              />
+
+              <div className="absolute inset-x-0 top-0 p-4 bg-gradient-to-b from-black/70 to-transparent flex items-center justify-between text-white">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-brand-orange">
+                    Diner Moment
+                  </p>
+                  <h3 className="text-sm sm:text-base font-black leading-tight">
+                    {selectedMemory.userName}
+                  </h3>
+                  <p className="text-[10px] text-white/70 font-bold mt-0.5">
+                    {new Date(selectedMemory.uploadedAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <button
+                  onClick={closeMemoryModal}
+                  className="p-2.5 bg-white/95 hover:bg-white text-gray-900 rounded-full shadow-md transition"
+                  aria-label="Close diner moment"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {visibleMemories.length > 1 && (
+                <>
+                  <button
+                    onClick={showPreviousMemory}
+                    className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 p-3 bg-white/90 hover:bg-white text-gray-900 rounded-full shadow-lg transition"
+                    aria-label="Previous diner moment"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={showNextMemory}
+                    className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 p-3 bg-white/90 hover:bg-white text-gray-900 rounded-full shadow-lg transition"
+                    aria-label="Next diner moment"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
+
+              {visibleMemories.length > 1 && (
+                <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/75 to-transparent">
+                  <div className="flex items-center justify-center gap-2 overflow-x-auto no-scrollbar">
+                    {visibleMemories.map((memory, index) => (
+                      <button
+                        key={memory.id}
+                        onClick={() => setSelectedMemoryIndex(index)}
+                        className={`w-14 h-12 sm:w-16 sm:h-14 rounded-2xl overflow-hidden border-2 flex-shrink-0 transition ${
+                          selectedMemoryIndex === index
+                            ? "border-brand-orange scale-105"
+                            : "border-white/20 opacity-70 hover:opacity-100"
+                        }`}
+                        aria-label={`Open diner moment ${index + 1}`}
+                      >
+                        <img
+                          src={memory.photoUrl}
+                          alt={`${memory.userName} thumbnail`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Login Dialog Modal Simulation */}
       <AnimatePresence>
